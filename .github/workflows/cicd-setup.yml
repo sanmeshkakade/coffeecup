@@ -9,6 +9,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+
     strategy:
       matrix:
         node-version: [20.x]
@@ -34,6 +39,16 @@ jobs:
 
     - name: Run the tests and generate coverage report
       run: npm test -- --coverage
+
+    - name: Update code coverage badge
+      run: npx update-badge
+
+    - name: Commit code coverage
+      env:
+        github_token: ${{ secrets.CICD_TOKEN }}
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Code Coverage Update
 
     - name: Deploy
       run: |
